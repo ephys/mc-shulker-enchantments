@@ -1,0 +1,30 @@
+modLoader="javafml"
+loaderVersion="[34,)"
+license="MIT"
+issueTrackerURL="https://github.com/Ephys/mc-shulker-enchantments/issues"
+[[mods]]
+modId="shulker_enchantments"
+version="${file.jarVersion}"
+displayName="Shulker Enchantments"
+#updateJSONURL="http://myurl.me/" #optional
+displayURL="https://github.com/Ephys/mc-shulker-enchantments"
+logoFile="logo.png"
+#credits=""
+authors="ephys"
+description='''
+This mod adds a "Siphon" enchantment that can be applied to Shulker Boxes.
+Shulker Boxes enchanted with it will receive any picked up item, as long as the shulker box already has at least one
+item of the same type.
+'''
+[[dependencies.shulker_enchantments]]
+    modId="forge"
+    mandatory=true
+    versionRange="[34,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.shulker_enchantments]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.3]"
+    ordering="NONE"
+    side="BOTH"
