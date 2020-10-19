@@ -2,7 +2,7 @@
   "minVersion": "0.8",
   "required": true,
   "compatibilityLevel": "JAVA_8",
-  "refmap": "random_plant_heights.mixins.refmap.json",
+  "refmap": "shulker_enchantments.mixins.refmap.json",
   "package": "be.ephys.shulker_enchantments.mixins",
   "mixins": [
     "ShulkerTileEnchantMixin",
