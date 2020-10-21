@@ -4,12 +4,12 @@ license="MIT"
 issueTrackerURL="https://github.com/Ephys/mc-shulker-enchantments/issues"
 [[mods]]
 modId="shulker_enchantments"
-version="${file.jarVersion}"
+version="${jarVersion}"
 displayName="Shulker Enchantments"
-#updateJSONURL="http://myurl.me/" #optional
+updateJSONURL="https://mc-curse-update-checker.herokuapp.com/414163"
 displayURL="https://github.com/Ephys/mc-shulker-enchantments"
 logoFile="logo.png"
-#credits=""
+credits="FlandersAustin for the Logo <3"
 authors="ephys"
 description='''
 This mod adds a "Siphon" enchantment that can be applied to Shulker Boxes.
