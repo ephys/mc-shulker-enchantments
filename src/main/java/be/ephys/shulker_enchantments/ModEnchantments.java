@@ -1,7 +1,6 @@
 package be.ephys.shulker_enchantments;
 
 import be.ephys.shulker_enchantments.enchantments.SiphonEnchantment;
-import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;
 import net.minecraft.item.*;
@@ -11,10 +10,8 @@ import net.minecraftforge.event.RegistryEvent;
 import java.util.Arrays;
 
 public class ModEnchantments {
-  public static final EnchantmentType SHULKER_LIKE = EnchantmentType.create("shulker_like", (item) -> {
-    // TODO: use tags to determine if block can receive this enchantment
-    return item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof ShulkerBoxBlock;
-  });
+
+  public static final EnchantmentType SHULKER_LIKE = EnchantmentType.create("shulker_like", ShulkerLikeTag::isShulkerLike);
 
   public static final SiphonEnchantment SIPHON = new SiphonEnchantment();
 

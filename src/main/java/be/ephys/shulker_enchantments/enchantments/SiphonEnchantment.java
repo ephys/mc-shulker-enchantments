@@ -1,6 +1,7 @@
 package be.ephys.shulker_enchantments.enchantments;
 
 import be.ephys.shulker_enchantments.ShulkerEnchantments;
+import be.ephys.shulker_enchantments.ShulkerLikeTag;
 import be.ephys.shulker_enchantments.capabilities.ItemStackHelperItemHandlerProvider;
 import be.ephys.shulker_enchantments.ModEnchantments;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -39,9 +40,7 @@ public class SiphonEnchantment extends Enchantment {
 
   @Override
   public boolean canApply(ItemStack stack) {
-    Item item = stack.getItem();
-
-    return item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof ShulkerBoxBlock;
+    return ShulkerLikeTag.isShulkerLike(stack.getItem());
   }
 
   @Override
@@ -73,6 +72,7 @@ public class SiphonEnchantment extends Enchantment {
     return super.func_230309_h_();
   }
 
+  // TODO move out
   public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
     ItemStack stack = event.getObject();
     Item item = stack.getItem();

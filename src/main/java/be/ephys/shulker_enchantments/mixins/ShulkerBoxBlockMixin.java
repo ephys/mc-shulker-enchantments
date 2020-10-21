@@ -29,6 +29,9 @@ public abstract class ShulkerBoxBlockMixin extends ContainerBlock {
    */
   @Inject(method = "getDrops", at = @At(value = "RETURN"))
   public void getDrops(BlockState state, LootContext.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
+
+    // TODO: add enchantments to builder.withDynamicDrop instead?
+
     TileEntity tileEntity = builder.get(LootParameters.BLOCK_ENTITY);
     List<ItemStack> drops = cir.getReturnValue();
 
