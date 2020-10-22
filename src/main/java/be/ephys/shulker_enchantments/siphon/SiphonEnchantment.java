@@ -1,6 +1,6 @@
-package be.ephys.shulker_enchantments.enchantments;
+package be.ephys.shulker_enchantments.siphon;
 
-import be.ephys.shulker_enchantments.ShulkerEnchantments;
+import be.ephys.shulker_enchantments.core.Mod;
 import be.ephys.shulker_enchantments.ShulkerLikeTag;
 import be.ephys.shulker_enchantments.capabilities.ItemStackHelperItemHandlerProvider;
 import be.ephys.shulker_enchantments.ModEnchantments;
@@ -29,13 +29,8 @@ import net.minecraftforge.items.ItemHandlerHelper;
 public class SiphonEnchantment extends Enchantment {
   public SiphonEnchantment() {
     super(Rarity.RARE, ModEnchantments.SHULKER_LIKE, new EquipmentSlotType[0]);
-    setRegistryName(ShulkerEnchantments.MODID + ":siphon");
-    this.name = "enchantment." + ShulkerEnchantments.MODID + ".siphon";
-  }
-
-  @Override
-  public int getMaxLevel() {
-    return 1;
+    setRegistryName(Mod.MOD_ID + ":siphon");
+    this.name = "enchantment." + Mod.MOD_ID + ".siphon";
   }
 
   @Override
@@ -49,27 +44,18 @@ public class SiphonEnchantment extends Enchantment {
   }
 
   @Override
-  public boolean isAllowedOnBooks() {
-    return true;
-  }
-
-  @Override
   public boolean isTreasureEnchantment() {
     return true;
   }
 
+  @Override
   public int getMinEnchantability(int enchantmentLevel) {
     return enchantmentLevel * 25;
   }
 
+  @Override
   public int getMaxEnchantability(int enchantmentLevel) {
     return this.getMinEnchantability(enchantmentLevel) + 50;
-  }
-
-  // can be found on villager sale
-  @Override
-  public boolean func_230309_h_() {
-    return super.func_230309_h_();
   }
 
   // TODO move out
@@ -87,7 +73,7 @@ public class SiphonEnchantment extends Enchantment {
     }
 
     event.addCapability(
-      new ResourceLocation(ShulkerEnchantments.MODID, "shulker_box_item_handler_value"),
+      new ResourceLocation(Mod.MOD_ID, "shulker_box_item_handler_value"),
       new ItemStackHelperItemHandlerProvider(stack)
     );
   }
@@ -101,21 +87,20 @@ public class SiphonEnchantment extends Enchantment {
     ItemEntity itemEntity = event.getItem();
     ItemStack pickedItemStack = itemEntity.getItem();
 
-    for (ItemStack itemStack : inventory) {
+    for (ItemStack invStack : inventory) {
       if (pickedItemStack.isEmpty()) {
         break;
       }
 
-      ItemStack stack = itemStack;
-      if (stack.isEmpty()) {
+      if (invStack.isEmpty()) {
         continue;
       }
 
-      if (EnchantmentHelper.getEnchantmentLevel(ModEnchantments.SIPHON, stack) == 0) {
+      if (EnchantmentHelper.getEnchantmentLevel(ModEnchantments.SIPHON, invStack) == 0) {
         continue;
       }
 
-      LazyOptional<IItemHandler> itemHandler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+      LazyOptional<IItemHandler> itemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
       if (!itemHandler.isPresent()) {
         continue;
       }
@@ -147,7 +132,7 @@ public class SiphonEnchantment extends Enchantment {
 
   public static boolean hasItem(IItemHandler itemHandler, ItemStack itemStack) {
     for (int i = 0; i < itemHandler.getSlots(); i++) {
-      if (itemHandler.getStackInSlot(i).isItemEqualIgnoreDurability(itemStack)) {
+      if (ItemHandlerHelper.canItemStacksStackRelaxed(itemHandler.getStackInSlot(i), itemStack)) {
         return true;
       }
     }
