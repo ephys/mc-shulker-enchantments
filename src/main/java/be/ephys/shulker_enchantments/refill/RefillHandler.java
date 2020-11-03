@@ -4,11 +4,8 @@ import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -66,7 +63,7 @@ public class RefillHandler {
       newStack.setCount(hotbarStack.getCount() + foundAmount);
     }
 
-    // there is some weird client desync is happening here:
+    // there is some weird client desync happening here:
     // trying to give back exactly what was just used causes a desync
     // setting it to anything else does however work.
     //
