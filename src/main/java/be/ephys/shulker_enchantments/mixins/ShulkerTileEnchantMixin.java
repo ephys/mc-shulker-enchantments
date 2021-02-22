@@ -47,7 +47,7 @@ public class ShulkerTileEnchantMixin {
     }
   }
 
-  @Inject(method = "func_230337_a_", at = @At("RETURN"))
+  @Inject(method = "read", at = @At("RETURN"))
   public void read$AddEnchantments(BlockState p_230337_1_, CompoundNBT nbtIn, CallbackInfo ci) {
     INBT nbt = nbtIn.get("Enchantments");
     if (nbt != null) {

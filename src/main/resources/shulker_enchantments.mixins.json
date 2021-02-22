@@ -9,6 +9,9 @@
     "BlockItemMixin",
     "ShulkerBoxBlockMixin"
   ],
+  "client": [
+    "ShulkerBoxTileEntityRendererMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
