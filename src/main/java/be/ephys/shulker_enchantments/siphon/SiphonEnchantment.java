@@ -4,6 +4,7 @@ import be.ephys.shulker_enchantments.core.Mod;
 import be.ephys.shulker_enchantments.ShulkerLikeTag;
 import be.ephys.shulker_enchantments.capabilities.ItemStackHelperItemHandlerProvider;
 import be.ephys.shulker_enchantments.ModEnchantments;
+import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -25,6 +26,10 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import top.theillusivec4.curios.api.CuriosApi;
+
+import java.util.Iterator;
+import java.util.Optional;
 
 public class SiphonEnchantment extends Enchantment {
   public SiphonEnchantment() {
@@ -83,11 +88,10 @@ public class SiphonEnchantment extends Enchantment {
       return;
     }
 
-    NonNullList<ItemStack> inventory = event.getPlayer().inventory.mainInventory;
     ItemEntity itemEntity = event.getItem();
     ItemStack pickedItemStack = itemEntity.getItem();
 
-    for (ItemStack invStack : inventory) {
+    for (ItemStack invStack : ModInventoryHelper.getInventoryItems(event.getPlayer())) {
       if (pickedItemStack.isEmpty()) {
         break;
       }
@@ -100,12 +104,12 @@ public class SiphonEnchantment extends Enchantment {
         continue;
       }
 
-      LazyOptional<IItemHandler> itemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+      Optional<IItemHandler> itemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
       if (!itemHandler.isPresent()) {
         continue;
       }
 
-      IItemHandler resolvedItemHandler = itemHandler.resolve().get();
+      IItemHandler resolvedItemHandler = itemHandler.get();
 
       if (hasItem(resolvedItemHandler, pickedItemStack)) {
         pickedItemStack = ItemHandlerHelper.insertItemStacked(resolvedItemHandler, pickedItemStack.copy(), false);
