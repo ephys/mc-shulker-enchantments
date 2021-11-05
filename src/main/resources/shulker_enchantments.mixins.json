@@ -5,7 +5,6 @@
   "refmap": "shulker_enchantments.mixins.refmap.json",
   "package": "be.ephys.shulker_enchantments.mixins",
   "mixins": [
-    "ShulkerTileEnchantMixin",
     "BlockItemMixin",
     "ShulkerBoxBlockMixin"
   ],

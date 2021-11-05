@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "minecraft:block/orange_shulker_box",
+    "side": "shulker_enchantments:block/orange_shulker_box_side",
+    "bottom": "shulker_enchantments:block/orange_shulker_box_bottom"
+  }
+}

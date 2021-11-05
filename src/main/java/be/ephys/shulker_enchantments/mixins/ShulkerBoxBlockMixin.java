@@ -1,6 +1,5 @@
 package be.ephys.shulker_enchantments.mixins;
 
-import be.ephys.shulker_enchantments.INbtAble;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ContainerBlock;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -24,8 +23,7 @@ public abstract class ShulkerBoxBlockMixin extends ContainerBlock {
   }
 
   /**
-   * Add the "Enchantment" properties that was added to ShulkerTileEnchant
-   * {@link ShulkerTileEnchantMixin}
+   * Restore data persisted in PersistedItemNbt to the Shulker Box ItemStack
    */
   @Inject(method = "getDrops", at = @At(value = "RETURN"))
   public void getDrops(BlockState state, LootContext.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
@@ -35,12 +33,11 @@ public abstract class ShulkerBoxBlockMixin extends ContainerBlock {
     TileEntity tileEntity = builder.get(LootParameters.BLOCK_ENTITY);
     List<ItemStack> drops = cir.getReturnValue();
 
-    if (!(tileEntity instanceof INbtAble)) {
+    if (tileEntity == null) {
       return;
     }
 
-    INbtAble nbtAbleTe = (INbtAble) tileEntity;
-    CompoundNBT tileStackNbt = nbtAbleTe.writeForItemStackNbt();
+    CompoundNBT tileStackNbt = tileEntity.getTileData().getCompound("PersistedItemNbt");
 
     for (ItemStack drop : drops) {
       if (!(drop.getItem() instanceof BlockItem)) {
