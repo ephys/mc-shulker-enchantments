@@ -5,10 +5,11 @@ import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+
+import java.util.Optional;
 
 public class RefillHandler {
   public static void attemptRefill(final PlayerEntity player, final int hotbarSlot, final ItemStack itemTemplate, int requestedAmount) {
@@ -28,7 +29,7 @@ public class RefillHandler {
     }
 
     int foundAmount = 0;
-    for (ItemStack invStack : player.inventory.mainInventory) {
+    for (ItemStack invStack : ModInventoryHelper.getInventoryItems(player)) {
       if (foundAmount >= requestedAmount) {
         break;
       }
@@ -37,12 +38,12 @@ public class RefillHandler {
         continue;
       }
 
-      LazyOptional<IItemHandler> itemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+      Optional<IItemHandler> itemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
       if (!itemHandler.isPresent()) {
         continue;
       }
 
-      IItemHandler resolvedItemHandler = itemHandler.resolve().get();
+      IItemHandler resolvedItemHandler = itemHandler.get();
 
       // TODO: leave 1 item in chest if the chest has SiphonEnchantment on it
       int missingAmount = requestedAmount - foundAmount;
