@@ -39,4 +39,4 @@ Shulker Box implementations typically use a TileEntity renderer to render the Sh
 These typically do not support enchantment glints.  
 As a solution, you could use the TileEntity renderer only for the Block, and define a baked model for the shulker box item.
 
-[https://github.com/ephys/mc-shulker-enchantments/blob/master/src/main/resources/assets/minecraft/models/item/black_shulker_box.json](Example)
+[This is what we did for the vanilla shulker box](https://github.com/ephys/mc-shulker-enchantments/blob/master/src/main/resources/assets/minecraft/models/item/black_shulker_box.json)
