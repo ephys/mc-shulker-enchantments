@@ -30,3 +30,13 @@ For more information about tags, see [The Minecraft Tag documentation](https://m
 Lastly, your item's *`ItemStack`s* must have Forge's `CapabilityItemHandler.ITEM_HANDLER_CAPABILITY` capability attached. See [Forge's Capabilities documentation](https://mcforge.readthedocs.io/en/stable/datastorage/capabilities/) to learn more about attaching capabilities to ItemStacks.
 
 If you do not provide this capability, your item's inventory will be impossible to manipulate.
+
+[See how we add Item Handler capabilities to the native ShulkerBox ItemStack](https://github.com/ephys/mc-shulker-enchantments/blob/0db51810ae4b0fcb92214f1e4c79d6b57e1522b4/src/main/java/be/ephys/shulker_enchantments/siphon/SiphonEnchantment.java#L67)
+
+### Enchantment Glint
+
+Shulker Box implementations typically use a TileEntity renderer to render the Shulker Box Item (emphasis on Item).  
+These typically do not support enchantment glints.  
+As a solution, you could use the TileEntity renderer only for the Block, and define a baked model for the shulker box item.
+
+[https://github.com/ephys/mc-shulker-enchantments/blob/master/src/main/resources/assets/minecraft/models/item/black_shulker_box.json](Example)
