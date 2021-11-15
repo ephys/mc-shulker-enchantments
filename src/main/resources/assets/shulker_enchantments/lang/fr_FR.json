@@ -1,4 +1,6 @@
 {
   "enchantment.shulker_enchantments.siphon": "Siphon",
-  "enchantment.shulker_enchantments.refill": "Recharge"
+  "enchantment.shulker_enchantments.refill": "Recharge",
+  "enchantment.shulker_enchantments.refill.desc": "Les items utilisés sont pris depuis la Shulker Box.",
+  "enchantment.shulker_enchantments.siphon.desc": "Les items ramassés vont dans la Shulker Box si celle-ci contient un item similaire."
 }

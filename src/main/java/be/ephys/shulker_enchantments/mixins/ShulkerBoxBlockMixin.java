@@ -44,6 +44,9 @@ public abstract class ShulkerBoxBlockMixin extends ContainerBlock {
     builder.add(ShulkerBoxBlockHelper.OPEN);
   }
 
+  /**
+   * @author ephys
+   */
   @Overwrite()
   public BlockRenderType getRenderType(BlockState state) {
     return state.get(ShulkerBoxBlockHelper.OPEN) ? BlockRenderType.ENTITYBLOCK_ANIMATED : BlockRenderType.MODEL;
