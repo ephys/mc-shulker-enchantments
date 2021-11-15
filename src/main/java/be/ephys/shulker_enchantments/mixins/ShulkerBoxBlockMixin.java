@@ -46,6 +46,7 @@ public abstract class ShulkerBoxBlockMixin extends ContainerBlock {
 
   /**
    * @author ephys
+   * @reason Optimising Shulker Box rendering
    */
   @Overwrite()
   public BlockRenderType getRenderType(BlockState state) {
