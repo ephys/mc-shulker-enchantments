@@ -3,9 +3,9 @@ package be.ephys.shulker_enchantments.refill;
 import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.core.Mod;
 import be.ephys.shulker_enchantments.ShulkerLikeTag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 /**
  * This is merely the enchantment.
@@ -16,14 +16,14 @@ import net.minecraft.item.ItemStack;
  */
 public class RefillEnchantment extends Enchantment {
   public RefillEnchantment() {
-    super(Rarity.RARE, ModEnchantments.SHULKER_LIKE, new EquipmentSlotType[0]);
+    super(Rarity.RARE, ModEnchantments.SHULKER_LIKE, new EquipmentSlot[0]);
     setRegistryName(Mod.MOD_ID + ":refill");
-    this.name = "enchantment." + Mod.MOD_ID + ".refill";
+    this.descriptionId = "enchantment." + Mod.MOD_ID + ".refill";
   }
 
   @Override
-  public boolean canApply(ItemStack stack) {
-    return ShulkerLikeTag.isShulkerLike(stack.getItem());
+  public boolean canEnchant(ItemStack stack) {
+    return ShulkerLikeTag.isShulkerLike(stack);
   }
 
   @Override
@@ -32,17 +32,17 @@ public class RefillEnchantment extends Enchantment {
   }
 
   @Override
-  public boolean isTreasureEnchantment() {
+  public boolean isTreasureOnly() {
     return true;
   }
 
   @Override
-  public int getMinEnchantability(int enchantmentLevel) {
+  public int getMinCost(int enchantmentLevel) {
     return enchantmentLevel * 25;
   }
 
   @Override
-  public int getMaxEnchantability(int enchantmentLevel) {
-    return this.getMinEnchantability(enchantmentLevel) + 50;
+  public int getMaxCost(int enchantmentLevel) {
+    return this.getMinCost(enchantmentLevel) + 50;
   }
 }

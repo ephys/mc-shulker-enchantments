@@ -1,8 +1,8 @@
 package be.ephys.shulker_enchantments.capabilities;
 
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
 /**
@@ -21,7 +21,7 @@ public class ItemStackHelperItemHandler extends ItemStackHandler {
     this.itemStack = itemStack;
     this.maxStackSize = maxStackSize;
 
-    CompoundNBT nbt = itemStack.getChildTag(BLOCK_ENTITY_TAG);
+    CompoundTag nbt = itemStack.getTagElement(BLOCK_ENTITY_TAG);
     if (nbt != null) {
       this.deserializeNBT(nbt);
     }
@@ -33,26 +33,26 @@ public class ItemStackHelperItemHandler extends ItemStackHandler {
   }
 
   @Override
-  public CompoundNBT serializeNBT() {
+  public CompoundTag serializeNBT() {
     // we override the parent serializeNBT because we need to merge the updated "Items" property with
     // other properties the itemStack has, such as Enchantments
 
-    CompoundNBT nbt = itemStack.getChildTag(BLOCK_ENTITY_TAG);
+    CompoundTag nbt = itemStack.getTagElement(BLOCK_ENTITY_TAG);
     if (nbt == null) {
-      nbt = new CompoundNBT();
+      nbt = new CompoundTag();
     }
 
-    ItemStackHelper.saveAllItems(nbt, this.stacks, true);
+    ContainerHelper.saveAllItems(nbt, this.stacks, true);
 
     return nbt;
   }
 
   protected void onContentsChanged(int slot) {
-    CompoundNBT newChildNbt = this.serializeNBT();
+    CompoundTag newChildNbt = this.serializeNBT();
 
-    CompoundNBT nbt = itemStack.getTag();
+    CompoundTag nbt = itemStack.getTag();
     if (nbt == null) {
-      nbt = new CompoundNBT();
+      nbt = new CompoundTag();
     }
 
     nbt.put(BLOCK_ENTITY_TAG, newChildNbt);

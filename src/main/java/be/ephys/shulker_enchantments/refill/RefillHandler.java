@@ -2,9 +2,9 @@ package be.ephys.shulker_enchantments.refill;
 
 import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -12,12 +12,12 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.Optional;
 
 public class RefillHandler {
-  public static void attemptRefill(final PlayerEntity player, final int hotbarSlot, final ItemStack itemTemplate, int requestedAmount) {
+  public static void attemptRefill(final Player player, final int hotbarSlot, final ItemStack itemTemplate, int requestedAmount) {
     if (player.isSpectator()) {
       return;
     }
 
-    ItemStack hotbarStack = player.inventory.getStackInSlot(hotbarSlot);
+    ItemStack hotbarStack = player.getInventory().getItem(hotbarSlot);
 
     // clamp to max stack size to ensure bad packets don't cause it to go above the max stack size
     requestedAmount = Math.min(requestedAmount, itemTemplate.getMaxStackSize() - hotbarStack.getCount());
@@ -34,7 +34,7 @@ public class RefillHandler {
         break;
       }
 
-      if (EnchantmentHelper.getEnchantmentLevel(ModEnchantments.REFILL, invStack) == 0) {
+      if (EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.REFILL, invStack) == 0) {
         continue;
       }
 
@@ -80,9 +80,9 @@ public class RefillHandler {
     // - We call detectAndSendChanges, it compares Server stacks with inventoryItemStacks and it turns out they are the same. No packet is sent.
     //
     // This first detectAndSendChanges before we do any change ensures that the client is synchronised.
-    player.openContainer.detectAndSendChanges();
-    player.replaceItemInInventory(hotbarSlot, newStack);
-    player.openContainer.detectAndSendChanges();
+    player.containerMenu.broadcastChanges();
+    player.getInventory().setItem(hotbarSlot, newStack);
+    player.containerMenu.broadcastChanges();
   }
 
   private static ItemStack extractItem(IItemHandler inventory, ItemStack itemTemplate, int requestedAmount) {

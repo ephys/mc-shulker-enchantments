@@ -3,11 +3,11 @@ package be.ephys.shulker_enchantments.refill;
 import be.ephys.shulker_enchantments.core.ModNetworking;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.fml.LogicalSide;
 
 @OnlyIn(Dist.CLIENT)
@@ -23,16 +23,16 @@ public class RefillClientEvents {
       return;
     }
 
-    if (Minecraft.getInstance().currentScreen != null) {
+    if (Minecraft.getInstance().screen != null) {
       // this invalidates the current inventory cache
       // to prevent the hotbar from filling up the second the interface is closed
       previousInv.selectedHotbarSlot = -1;
       return;
     }
 
-    final PlayerEntity player = event.player;
-    final ItemStack currentItemStack = event.player.inventory.getCurrentItem();
-    final int hotbarSlot = player.inventory.currentItem;
+    final Player player = event.player;
+    final ItemStack currentItemStack = event.player.getInventory().getSelected();
+    final int hotbarSlot = player.getInventory().selected;
 
     boolean wasEmptied = previousInv.currentStackSize > 0 && currentItemStack.isEmpty();
 

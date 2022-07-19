@@ -1,46 +1,42 @@
 package be.ephys.shulker_enchantments.siphon;
 
-import be.ephys.shulker_enchantments.core.Mod;
+import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.ShulkerLikeTag;
 import be.ephys.shulker_enchantments.capabilities.ItemStackHelperItemHandlerProvider;
-import be.ephys.shulker_enchantments.ModEnchantments;
+import be.ephys.shulker_enchantments.core.Mod;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.SCollectItemPacket;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import top.theillusivec4.curios.api.CuriosApi;
 
-import java.util.Iterator;
 import java.util.Optional;
 
 public class SiphonEnchantment extends Enchantment {
   public SiphonEnchantment() {
-    super(Rarity.RARE, ModEnchantments.SHULKER_LIKE, new EquipmentSlotType[0]);
+    super(Rarity.RARE, ModEnchantments.SHULKER_LIKE, new EquipmentSlot[0]);
     setRegistryName(Mod.MOD_ID + ":siphon");
-    this.name = "enchantment." + Mod.MOD_ID + ".siphon";
+    this.descriptionId = "enchantment." + Mod.MOD_ID + ".siphon";
   }
 
   @Override
-  public boolean canApply(ItemStack stack) {
-    return ShulkerLikeTag.isShulkerLike(stack.getItem());
+  public boolean canEnchant(ItemStack stack) {
+    return ShulkerLikeTag.isShulkerLike(stack);
   }
 
   @Override
@@ -49,18 +45,18 @@ public class SiphonEnchantment extends Enchantment {
   }
 
   @Override
-  public boolean isTreasureEnchantment() {
+  public boolean isTreasureOnly() {
     return true;
   }
 
   @Override
-  public int getMinEnchantability(int enchantmentLevel) {
+  public int getMinCost(int enchantmentLevel) {
     return enchantmentLevel * 25;
   }
 
   @Override
-  public int getMaxEnchantability(int enchantmentLevel) {
-    return this.getMinEnchantability(enchantmentLevel) + 50;
+  public int getMaxCost(int enchantmentLevel) {
+    return this.getMaxCost(enchantmentLevel) + 50;
   }
 
   // TODO move out
@@ -100,7 +96,7 @@ public class SiphonEnchantment extends Enchantment {
         continue;
       }
 
-      if (EnchantmentHelper.getEnchantmentLevel(ModEnchantments.SIPHON, invStack) == 0) {
+      if (EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.SIPHON, invStack) == 0) {
         continue;
       }
 
@@ -121,16 +117,16 @@ public class SiphonEnchantment extends Enchantment {
     if (totalPickedUp > 0) {
       event.setCanceled(true);
       itemEntity.getItem().setCount(pickedItemStack.getCount());
-      event.getPlayer().inventory.markDirty();
+      event.getPlayer().getInventory().setChanged();
 
       if (!event.getItem().isSilent()) {
-        event.getItem().world.playSound(null, event.getPlayer().getPosX(), event.getPlayer().getPosY(), event.getPlayer().getPosZ(),
-          SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
-          ((event.getItem().world.rand.nextFloat() - event.getItem().world.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+        event.getItem().level.playSound(null, event.getPlayer().getX(), event.getPlayer().getY(), event.getPlayer().getZ(),
+          SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
+          ((event.getItem().level.random.nextFloat() - event.getItem().level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
       }
-      ((ServerPlayerEntity) event.getPlayer()).connection.sendPacket(new SCollectItemPacket(event.getItem().getEntityId(), event.getPlayer().getEntityId(), totalPickedUp));
+      ((ServerPlayer) event.getPlayer()).connection.send(new ClientboundTakeItemEntityPacket(event.getItem().getId(), event.getPlayer().getId(), totalPickedUp));
 
-      event.getPlayer().openContainer.detectAndSendChanges();
+      event.getPlayer().containerMenu.broadcastChanges();
     }
   }
 

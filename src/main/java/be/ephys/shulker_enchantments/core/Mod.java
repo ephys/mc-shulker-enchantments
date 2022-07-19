@@ -3,7 +3,7 @@ package be.ephys.shulker_enchantments.core;
 import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.refill.RefillClientEvents;
 import be.ephys.shulker_enchantments.refill.RequestRefillNetworkMessage;
-import net.minecraft.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
