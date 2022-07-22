@@ -18,7 +18,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '3.0.0'
+version = '3.0.1'
 group = 'be.ephys.shulker_enchantments'
 archivesBaseName = 'shulker_enchantments'
 

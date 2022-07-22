@@ -56,7 +56,7 @@ public class SiphonEnchantment extends Enchantment {
 
   @Override
   public int getMaxCost(int enchantmentLevel) {
-    return this.getMaxCost(enchantmentLevel) + 50;
+    return this.getMinCost(enchantmentLevel) + 50;
   }
 
   // TODO move out
