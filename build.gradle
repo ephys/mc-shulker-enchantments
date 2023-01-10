@@ -145,6 +145,18 @@ mixin {
 }
 
 repositories {
+    maven {
+        url = "https://www.cursemaven.com"
+    }
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/ephys/cookiecore")
+        credentials {
+            username = project.findProperty("gpr.user") as String ?: System.getenv("GH_MVN_USERNAME")
+            password = project.findProperty("gpr.key") as String ?: System.getenv("GH_MVN_PASSWORD")
+        }
+    }
+
     // Put repositories for dependencies here
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
@@ -178,6 +190,14 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1:api")
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1")
+
+    implementation fg.deobf("curse.maven:quark-243121:3800462")
+    implementation fg.deobf("curse.maven:autoreglib-250363:3642382")
+
+    // https://github.com/Ephys/CookieCore/packages/102415
+    // You'll need to authenticate to Github Packages
+    // See https://docs.github.com/en/packages/guides/configuring-gradle-for-use-with-github-packages#authenticating-to-github-packages
+    implementation fg.deobf('be.ephys.cookiecore:cookiecore:1.18.2-4.0.0-c56fd52')
 }
 
 // Example for how to get properties into the manifest for reading at runtime.

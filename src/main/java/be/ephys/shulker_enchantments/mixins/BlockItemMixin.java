@@ -2,7 +2,6 @@ package be.ephys.shulker_enchantments.mixins;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -25,21 +24,36 @@ public class BlockItemMixin {
       return;
     }
 
-    ListTag enchantments = nbt.getList("Enchantments", 10);
-    if (!enchantments.isEmpty()) {
-      BlockEntity tileentity = worldIn.getBlockEntity(pos);
-      if (tileentity == null) {
-        return;
-      }
+    System.out.println("hi!");
 
-      CompoundTag persistedItemNbt = new CompoundTag();
-      persistedItemNbt.put("Enchantments", enchantments);
-      if (nbt.contains("RepairCost")) {
-        persistedItemNbt.put("RepairCost", nbt.get("RepairCost"));
-      }
-
-      tileentity.getTileData().put("PersistedItemNbt", persistedItemNbt);
-      tileentity.setChanged();
+    if (!nbt.contains("Enchantments")) {
+      return;
     }
+
+    BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+    if (blockEntity == null) {
+      return;
+    }
+
+    CompoundTag persistedItemNbt = new CompoundTag();
+    boolean copied = copyTo(persistedItemNbt, nbt, new String[]{"RepairCost", "Enchantments", "quark:RuneColor", "quark:RuneAttached"});
+    if (!copied) {
+      return;
+    }
+
+    blockEntity.getTileData().put("PersistedItemNbt", persistedItemNbt);
+    blockEntity.setChanged();
+  }
+
+  private static boolean copyTo(CompoundTag target, CompoundTag source, String[] keys) {
+    boolean copied = false;
+    for (String key: keys) {
+      if (source.contains(key)) {
+        target.put(key, source.get(key));
+        copied = true;
+      }
+    }
+
+    return copied;
   }
 }
