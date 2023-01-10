@@ -1,30 +1,25 @@
 package be.ephys.shulker_enchantments.siphon;
 
 import be.ephys.shulker_enchantments.ModEnchantments;
-import be.ephys.shulker_enchantments.ShulkerLikeTag;
-import be.ephys.shulker_enchantments.capabilities.ItemStackHelperItemHandlerProvider;
+import be.ephys.shulker_enchantments.Tags;
 import be.ephys.shulker_enchantments.core.Mod;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
 import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.block.ShulkerBoxBlock;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -36,9 +31,10 @@ public class SiphonEnchantment extends Enchantment {
     this.descriptionId = "enchantment." + Mod.MOD_ID + ".siphon";
   }
 
+  // TODO: put isEnderChest behind config option
   @Override
   public boolean canEnchant(ItemStack stack) {
-    return ShulkerLikeTag.isShulkerLike(stack);
+    return Tags.isShulkerLike(stack) || Tags.isEnderChest(stack);
   }
 
   @Override
@@ -59,26 +55,6 @@ public class SiphonEnchantment extends Enchantment {
   @Override
   public int getMaxCost(int enchantmentLevel) {
     return this.getMinCost(enchantmentLevel) + 50;
-  }
-
-  // TODO move out
-  public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
-    ItemStack stack = event.getObject();
-    Item item = stack.getItem();
-
-    if (!(item instanceof BlockItem)) {
-      return;
-    }
-
-    BlockItem blockItem = (BlockItem) item;
-    if (!(blockItem.getBlock() instanceof ShulkerBoxBlock)) {
-      return;
-    }
-
-    event.addCapability(
-      new ResourceLocation(Mod.MOD_ID, "shulker_box_item_handler_value"),
-      new ItemStackHelperItemHandlerProvider(stack)
-    );
   }
 
   public void onItemPickup(EntityItemPickupEvent event) {
@@ -103,18 +79,23 @@ public class SiphonEnchantment extends Enchantment {
         continue;
       }
 
-      Optional<IItemHandler> itemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
-      if (!itemHandler.isPresent()) {
-        continue;
+      IItemHandler itemHandler;
+      if (Tags.isEnderChest(invStack)) {
+        itemHandler = new InvWrapper(player.getEnderChestInventory());
+      } else {
+        Optional<IItemHandler> optionalItemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
+        if (!optionalItemHandler.isPresent()) {
+          continue;
+        }
+
+        itemHandler = optionalItemHandler.get();
       }
 
-      IItemHandler resolvedItemHandler = itemHandler.get();
-
-      if (hasItem(resolvedItemHandler, pickedItemStack)) {
+      if (hasItem(itemHandler, pickedItemStack)) {
         pickedItemStack = pickedItemStack.copy();
         pickedItemStack = addStackToExistingStacksOnly(player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve().get(), pickedItemStack, false);
         if (!pickedItemStack.isEmpty()) {
-          pickedItemStack = ItemHandlerHelper.insertItemStacked(resolvedItemHandler, pickedItemStack, false);
+          pickedItemStack = ItemHandlerHelper.insertItemStacked(itemHandler, pickedItemStack, false);
         }
       }
     }

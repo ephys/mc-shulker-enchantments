@@ -1,6 +1,7 @@
 package be.ephys.shulker_enchantments.refill;
 
 import be.ephys.shulker_enchantments.ModEnchantments;
+import be.ephys.shulker_enchantments.Tags;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -8,6 +9,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import java.util.Optional;
 
@@ -38,16 +40,21 @@ public class RefillHandler {
         continue;
       }
 
-      Optional<IItemHandler> itemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
-      if (!itemHandler.isPresent()) {
-        continue;
-      }
+      IItemHandler itemHandler;
+      if (Tags.isEnderChest(invStack)) {
+        itemHandler = new InvWrapper(player.getEnderChestInventory());
+      } else {
+        Optional<IItemHandler> optionalItemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
+        if (!optionalItemHandler.isPresent()) {
+          continue;
+        }
 
-      IItemHandler resolvedItemHandler = itemHandler.get();
+        itemHandler = optionalItemHandler.get();
+      }
 
       // TODO: leave 1 item in chest if the chest has SiphonEnchantment on it
       int missingAmount = requestedAmount - foundAmount;
-      ItemStack extractedStack = extractItem(resolvedItemHandler, itemTemplate, missingAmount);
+      ItemStack extractedStack = extractItem(itemHandler, itemTemplate, missingAmount);
       foundAmount += extractedStack.getCount();
     }
 

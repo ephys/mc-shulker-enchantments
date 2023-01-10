@@ -34,6 +34,10 @@ public class BlockItemMixin {
 
       CompoundTag persistedItemNbt = new CompoundTag();
       persistedItemNbt.put("Enchantments", enchantments);
+      if (nbt.contains("RepairCost")) {
+        persistedItemNbt.put("RepairCost", nbt.get("RepairCost"));
+      }
+
       tileentity.getTileData().put("PersistedItemNbt", persistedItemNbt);
       tileentity.setChanged();
     }

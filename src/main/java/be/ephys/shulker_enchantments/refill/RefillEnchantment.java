@@ -2,7 +2,7 @@ package be.ephys.shulker_enchantments.refill;
 
 import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.core.Mod;
-import be.ephys.shulker_enchantments.ShulkerLikeTag;
+import be.ephys.shulker_enchantments.Tags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -23,7 +23,7 @@ public class RefillEnchantment extends Enchantment {
 
   @Override
   public boolean canEnchant(ItemStack stack) {
-    return ShulkerLikeTag.isShulkerLike(stack);
+    return Tags.isShulkerLike(stack);
   }
 
   @Override

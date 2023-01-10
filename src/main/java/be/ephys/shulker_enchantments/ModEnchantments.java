@@ -1,5 +1,6 @@
 package be.ephys.shulker_enchantments;
 
+import be.ephys.shulker_enchantments.capabilities.ItemStackHelperItemHandlerProvider;
 import be.ephys.shulker_enchantments.refill.RefillEnchantment;
 import be.ephys.shulker_enchantments.siphon.SiphonEnchantment;
 import net.minecraft.world.item.CreativeModeTab;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 
 public class ModEnchantments {
 
-  public static final EnchantmentCategory SHULKER_LIKE = EnchantmentCategory.create("shulker_like", ShulkerLikeTag::isShulkerLike);
+  public static final EnchantmentCategory SHULKER_LIKE = EnchantmentCategory.create("shulker_like", Tags::isShulkerLike);
 
   public static final SiphonEnchantment SIPHON = new SiphonEnchantment();
   public static final RefillEnchantment REFILL = new RefillEnchantment();
@@ -25,7 +26,7 @@ public class ModEnchantments {
 
     event.getRegistry().registerAll(SIPHON);
     MinecraftForge.EVENT_BUS.addListener(SIPHON::onItemPickup);
-    MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, SIPHON::onAttachItemStackCapabilities);
+    MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, ItemStackHelperItemHandlerProvider::onAttachItemStackCapabilities);
 
     //
 

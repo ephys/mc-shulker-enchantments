@@ -5,8 +5,7 @@
   "refmap": "shulker_enchantments.mixins.refmap.json",
   "package": "be.ephys.shulker_enchantments.mixins",
   "mixins": [
-    "BlockItemMixin",
-    "ShulkerBoxBlockMixin"
+    "BlockItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
