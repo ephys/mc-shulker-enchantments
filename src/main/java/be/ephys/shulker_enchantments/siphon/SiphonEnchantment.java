@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -25,6 +26,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class SiphonEnchantment extends Enchantment {
@@ -86,8 +88,9 @@ public class SiphonEnchantment extends Enchantment {
 
     ItemEntity itemEntity = event.getItem();
     ItemStack pickedItemStack = itemEntity.getItem();
+    Player player = event.getPlayer();
 
-    for (ItemStack invStack : ModInventoryHelper.getInventoryItems(event.getPlayer())) {
+    for (ItemStack invStack : ModInventoryHelper.getInventoryItems(player)) {
       if (pickedItemStack.isEmpty()) {
         break;
       }
@@ -108,7 +111,11 @@ public class SiphonEnchantment extends Enchantment {
       IItemHandler resolvedItemHandler = itemHandler.get();
 
       if (hasItem(resolvedItemHandler, pickedItemStack)) {
-        pickedItemStack = ItemHandlerHelper.insertItemStacked(resolvedItemHandler, pickedItemStack.copy(), false);
+        pickedItemStack = pickedItemStack.copy();
+        pickedItemStack = addStackToExistingStacksOnly(player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve().get(), pickedItemStack, false);
+        if (!pickedItemStack.isEmpty()) {
+          pickedItemStack = ItemHandlerHelper.insertItemStacked(resolvedItemHandler, pickedItemStack, false);
+        }
       }
     }
 
@@ -117,17 +124,33 @@ public class SiphonEnchantment extends Enchantment {
     if (totalPickedUp > 0) {
       event.setCanceled(true);
       itemEntity.getItem().setCount(pickedItemStack.getCount());
-      event.getPlayer().getInventory().setChanged();
+      player.getInventory().setChanged();
 
-      if (!event.getItem().isSilent()) {
-        event.getItem().level.playSound(null, event.getPlayer().getX(), event.getPlayer().getY(), event.getPlayer().getZ(),
+      if (!itemEntity.isSilent()) {
+        itemEntity.level.playSound(null, player.getX(), player.getY(), player.getZ(),
           SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
-          ((event.getItem().level.random.nextFloat() - event.getItem().level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+          ((itemEntity.level.random.nextFloat() - itemEntity.level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
       }
-      ((ServerPlayer) event.getPlayer()).connection.send(new ClientboundTakeItemEntityPacket(event.getItem().getId(), event.getPlayer().getId(), totalPickedUp));
+      ((ServerPlayer) player).connection.send(new ClientboundTakeItemEntityPacket(event.getItem().getId(), event.getPlayer().getId(), totalPickedUp));
 
-      event.getPlayer().containerMenu.broadcastChanges();
+      player.containerMenu.broadcastChanges();
     }
+  }
+
+  public static ItemStack addStackToExistingStacksOnly(IItemHandler inventory, @Nonnull ItemStack stack, boolean simulate) {
+    for (int i = 0; i < inventory.getSlots(); i++) {
+      if (!ItemHandlerHelper.canItemStacksStackRelaxed(inventory.getStackInSlot(i), stack)) {
+        continue;
+      }
+
+      stack = inventory.insertItem(i, stack, simulate);
+
+      if (stack.isEmpty()) {
+        break;
+      }
+    }
+
+    return stack;
   }
 
   public static boolean hasItem(IItemHandler itemHandler, ItemStack itemStack) {
