@@ -24,8 +24,6 @@ public class BlockItemMixin {
       return;
     }
 
-    System.out.println("hi!");
-
     if (!nbt.contains("Enchantments")) {
       return;
     }
