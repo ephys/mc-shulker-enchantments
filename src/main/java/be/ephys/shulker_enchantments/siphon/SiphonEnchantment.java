@@ -1,5 +1,6 @@
 package be.ephys.shulker_enchantments.siphon;
 
+import be.ephys.cookiecore.config.Config;
 import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.Tags;
 import be.ephys.shulker_enchantments.core.Mod;
@@ -14,9 +15,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -26,6 +29,10 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class SiphonEnchantment extends Enchantment {
+  @Config(name = "siphon_on_consume", side = ModConfig.Type.SERVER, description = "Siphon items produced by consuming items (such as milk buckets, bottles, etc.)")
+  @Config.BooleanDefault(value = true)
+  public static ForgeConfigSpec.BooleanValue siphonOnConsume;
+
   public SiphonEnchantment() {
     super(Rarity.RARE, ModEnchantments.SHULKER_LIKE, new EquipmentSlot[0]);
     setRegistryName(Mod.MOD_ID + ":siphon");
@@ -59,6 +66,10 @@ public class SiphonEnchantment extends Enchantment {
   }
 
   public void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
+    if (!siphonOnConsume.get()) {
+      return;
+    }
+
     if (event.isCanceled()) {
       return;
     }
