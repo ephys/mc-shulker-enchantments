@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.registries.ObjectHolder;
 
 import java.util.Arrays;
@@ -38,6 +39,7 @@ public class ModEnchantments {
 
     event.getRegistry().registerAll(SIPHON);
     MinecraftForge.EVENT_BUS.addListener(SIPHON::onItemPickup);
+    MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, SIPHON::onItemUseFinish);
     MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, ModEnchantments::onAttachItemStackCapabilities);
 
     //

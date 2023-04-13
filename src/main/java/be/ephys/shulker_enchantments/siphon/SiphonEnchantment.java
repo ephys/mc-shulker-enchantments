@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -57,6 +58,30 @@ public class SiphonEnchantment extends Enchantment {
     return this.getMinCost(enchantmentLevel) + 50;
   }
 
+  public void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
+    if (event.isCanceled()) {
+      return;
+    }
+
+    if (!(event.getEntityLiving() instanceof Player player)) {
+      return;
+    }
+
+    ItemStack sourceStack = event.getItem();
+    ItemStack resultStack = event.getResultStack();
+
+    // consuming did not produce a new item (such as an empty bottle)
+    if (sourceStack == resultStack) {
+      return;
+    }
+
+    int totalPickedUp = siphonItem(player, resultStack);
+    if (totalPickedUp > 0) {
+      resultStack.setCount(resultStack.getCount() - totalPickedUp);
+      player.getInventory().setChanged();
+    }
+  }
+
   public void onItemPickup(EntityItemPickupEvent event) {
     if (event.isCanceled() || event.getResult() == Event.Result.ALLOW) {
       return;
@@ -65,6 +90,27 @@ public class SiphonEnchantment extends Enchantment {
     ItemEntity itemEntity = event.getItem();
     ItemStack pickedItemStack = itemEntity.getItem();
     Player player = event.getPlayer();
+
+    int totalPickedUp = siphonItem(player, pickedItemStack);
+
+    if (totalPickedUp > 0) {
+      event.setCanceled(true);
+      pickedItemStack.setCount(pickedItemStack.getCount() - totalPickedUp);
+      player.getInventory().setChanged();
+
+      if (!itemEntity.isSilent()) {
+        itemEntity.level.playSound(null, player.getX(), player.getY(), player.getZ(),
+          SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
+          ((itemEntity.level.random.nextFloat() - itemEntity.level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+      }
+      ((ServerPlayer) player).connection.send(new ClientboundTakeItemEntityPacket(event.getItem().getId(), event.getPlayer().getId(), totalPickedUp));
+
+      player.containerMenu.broadcastChanges();
+    }
+  }
+
+  public int siphonItem(Player player, ItemStack pickedItemStack) {
+    ItemStack initialItemStack = pickedItemStack;
 
     for (ItemStack invStack : ModInventoryHelper.getInventoryItems(player)) {
       if (pickedItemStack.isEmpty()) {
@@ -101,22 +147,9 @@ public class SiphonEnchantment extends Enchantment {
       }
     }
 
-    int totalPickedUp = itemEntity.getItem().getCount() - pickedItemStack.getCount();
+    int totalPickedUp = initialItemStack.getCount() - pickedItemStack.getCount();
 
-    if (totalPickedUp > 0) {
-      event.setCanceled(true);
-      itemEntity.getItem().setCount(pickedItemStack.getCount());
-      player.getInventory().setChanged();
-
-      if (!itemEntity.isSilent()) {
-        itemEntity.level.playSound(null, player.getX(), player.getY(), player.getZ(),
-          SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
-          ((itemEntity.level.random.nextFloat() - itemEntity.level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-      }
-      ((ServerPlayer) player).connection.send(new ClientboundTakeItemEntityPacket(event.getItem().getId(), event.getPlayer().getId(), totalPickedUp));
-
-      player.containerMenu.broadcastChanges();
-    }
+    return totalPickedUp;
   }
 
   public static ItemStack addStackToExistingStacksOnly(IItemHandler inventory, @Nonnull ItemStack stack, boolean simulate) {
