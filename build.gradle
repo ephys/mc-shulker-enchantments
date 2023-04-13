@@ -18,7 +18,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '3.0.1'
+version = '3.1.0'
 group = 'be.ephys.shulker_enchantments'
 archivesBaseName = 'shulker_enchantments'
 
@@ -173,7 +173,7 @@ dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.0'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.1.76'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
@@ -191,8 +191,23 @@ dependencies {
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1:api")
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1")
 
+    // compat with quark & quark oddities (seed pouch)
     implementation fg.deobf("curse.maven:quark-243121:3800462")
+    implementation fg.deobf("curse.maven:quark-oddities-301051:3575623")
     implementation fg.deobf("curse.maven:autoreglib-250363:3642382")
+
+    // compat with botania (flower pouch)
+    implementation fg.deobf("curse.maven:botania-225643:3936568")
+    implementation fg.deobf("curse.maven:patchouli-306770:3846086")
+
+    // compat with supplementaries (quiver)
+    implementation fg.deobf("curse.maven:supplementaries-412082:4381350")
+    implementation fg.deobf("curse.maven:selene-499980:3842421")
+
+    // compat with thermal expansion (fluid cell)
+    implementation fg.deobf("curse.maven:thermal-expansion-69163:4382343")
+    implementation fg.deobf("curse.maven:thermal-foundation-222880:4382339")
+    implementation fg.deobf("curse.maven:cofh-core-69162:4385215")
 
     // https://github.com/Ephys/CookieCore/packages/102415
     // You'll need to authenticate to Github Packages

@@ -17,6 +17,8 @@
     "minecraft:purple_shulker_box",
     "minecraft:red_shulker_box",
     "minecraft:white_shulker_box",
-    "minecraft:yellow_shulker_box"
+    "minecraft:yellow_shulker_box",
+    { "id": "quark:seed_pouch", "required": false },
+    { "id": "supplementaries:quiver", "required": false }
   ]
 }

@@ -9,13 +9,13 @@ import net.minecraftforge.items.ItemStackHandler;
  * IItemHandler for ItemStacks that use ItemStackHelper to persist/read their items from their inventories.
  * eg. item dropped when breaking a ShulkerBox.
  */
-public class ItemStackHelperItemHandler extends ItemStackHandler {
+public class BlockItemStackItemHandler extends ItemStackHandler {
   private final ItemStack itemStack;
   private final int maxStackSize;
 
   public static final String BLOCK_ENTITY_TAG = "BlockEntityTag";
 
-  public ItemStackHelperItemHandler(ItemStack itemStack, int slotCount, int maxStackSize) {
+  public BlockItemStackItemHandler(ItemStack itemStack, int slotCount, int maxStackSize) {
     super(slotCount);
 
     this.itemStack = itemStack;

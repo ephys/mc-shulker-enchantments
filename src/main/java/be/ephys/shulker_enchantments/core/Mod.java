@@ -13,6 +13,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @net.minecraftforge.fml.common.Mod(Mod.MOD_ID)
 public class Mod {
@@ -20,6 +22,7 @@ public class Mod {
 
   private static final DeferredRegister<GlobalLootModifierSerializer<?>> GLM = DeferredRegister.create(ForgeRegistries.Keys.LOOT_MODIFIER_SERIALIZERS, MOD_ID);
   private static final RegistryObject<CopyEnchantmentsLootModifier.Serializer> COPY_ENCHANTMENTS = GLM.register("copy_enchantments", CopyEnchantmentsLootModifier.Serializer::new);
+  public static final Logger LOG = LogManager.getLogger(MOD_ID);
 
   public Mod() {
     GLM.register(FMLJavaModLoadingContext.get().getModEventBus());

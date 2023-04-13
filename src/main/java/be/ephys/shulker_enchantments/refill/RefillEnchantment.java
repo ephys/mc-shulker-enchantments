@@ -23,7 +23,7 @@ public class RefillEnchantment extends Enchantment {
 
   @Override
   public boolean canEnchant(ItemStack stack) {
-    return Tags.isShulkerLike(stack);
+    return Tags.isShulkerLike(stack) || Tags.isEnderChest(stack);
   }
 
   @Override

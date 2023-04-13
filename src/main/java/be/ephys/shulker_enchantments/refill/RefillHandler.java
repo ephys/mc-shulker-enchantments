@@ -2,6 +2,7 @@ package be.ephys.shulker_enchantments.refill;
 
 import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.Tags;
+import be.ephys.shulker_enchantments.core.Mod;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -46,6 +47,7 @@ public class RefillHandler {
       } else {
         Optional<IItemHandler> optionalItemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
         if (!optionalItemHandler.isPresent()) {
+          Mod.LOG.error("Item " + invStack.getItem().getRegistryName() + " is enchanted with refill but does not have an item handler");
           continue;
         }
 

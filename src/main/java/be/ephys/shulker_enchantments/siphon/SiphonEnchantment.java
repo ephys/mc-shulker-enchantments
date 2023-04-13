@@ -84,7 +84,8 @@ public class SiphonEnchantment extends Enchantment {
         itemHandler = new InvWrapper(player.getEnderChestInventory());
       } else {
         Optional<IItemHandler> optionalItemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
-        if (!optionalItemHandler.isPresent()) {
+        if (optionalItemHandler.isEmpty()) {
+          Mod.LOG.error("Item " + invStack.getItem().getRegistryName() + " is enchanted with siphon but does not have an item handler");
           continue;
         }
 

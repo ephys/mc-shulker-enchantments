@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:ender_chest"
+    "minecraft:ender_chest",
+    { "id": "botania:ender_hand", "required": false }
   ]
 }
