@@ -38,6 +38,10 @@ Which parts of the inventory are refilled:
       return false;
     }
 
-    return RefillConfig.refillNonStackables.get() || stack.isStackable();
+    if (!RefillConfig.refillNonStackables.get() && !stack.isStackable()) {
+      return false;
+    }
+
+    return true;
   }
 }

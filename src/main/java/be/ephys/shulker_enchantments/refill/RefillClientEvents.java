@@ -16,7 +16,9 @@ import java.util.Arrays;
 
 @OnlyIn(Dist.CLIENT)
 public class RefillClientEvents {
+  private static boolean trackingReset = false;
   private static final ItemStack[] previousInventory = new ItemStack[41];
+
   static {
     Arrays.fill(previousInventory, ItemStack.EMPTY);
   }
@@ -31,10 +33,17 @@ public class RefillClientEvents {
     }
 
     if (Minecraft.getInstance().screen != null) {
+      if (!trackingReset) {
+        trackingReset = true;
+        Arrays.fill(previousInventory, ItemStack.EMPTY);
+      }
+
       // this invalidates the current inventory cache
       // to prevent the hotbar from filling up the second the interface is closed
       return;
     }
+
+    trackingReset = false;
 
     final Player player = event.player;
 
@@ -61,12 +70,10 @@ public class RefillClientEvents {
 
     // detect whether player changed which hotbar slot is selected
     // or replaced current ItemStack in the active hotbar slot
-    if (!ModInventoryHelper.areItemStacksEqual(currentStack, previousStack)) {
+    if (!wasEmptied && !ModInventoryHelper.areItemStacksEqual(currentStack, previousStack)) {
       previousInventory[slot] = currentStack.copy();
 
-      if (!wasEmptied) {
-        return;
-      }
+      return;
     }
 
     int newStackSize = currentStack.getCount();
