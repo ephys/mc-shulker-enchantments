@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 public class Tags {
   public static final TagKey<Item> TAG_SHULKER_LIKE = ItemTags.create(new ResourceLocation(Mod.MOD_ID, "shulker_like"));
   public static final TagKey<Item> TAG_ENDER_CHESTS = ItemTags.create(new ResourceLocation(Mod.MOD_ID, "ender_chests"));
+  public static final TagKey<Item> TAG_NON_REFILLABLE = ItemTags.create(new ResourceLocation(Mod.MOD_ID, "non_refillable"));
 
   public static boolean isShulkerLike(Item item) {
     return item.builtInRegistryHolder().is(TAG_SHULKER_LIKE);

@@ -1,5 +1,6 @@
 package be.ephys.shulker_enchantments.core;
 
+import be.ephys.cookiecore.config.ConfigSynchronizer;
 import be.ephys.shulker_enchantments.CopyEnchantmentsLootModifier;
 import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.refill.RefillClientEvents;
@@ -25,6 +26,8 @@ public class Mod {
   public static final Logger LOG = LogManager.getLogger(MOD_ID);
 
   public Mod() {
+    ConfigSynchronizer.synchronizeConfig();
+
     GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
 
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);

@@ -2,7 +2,9 @@ package be.ephys.shulker_enchantments.refill;
 
 import be.ephys.shulker_enchantments.core.ModNetworking;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
+import be.ephys.shulker_enchantments.refill.RefillConfig.RefillScope;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -10,9 +12,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.LogicalSide;
 
+import java.util.Arrays;
+
 @OnlyIn(Dist.CLIENT)
 public class RefillClientEvents {
-  private static final InventoryData previousInv = new InventoryData();
+  private static final ItemStack[] previousInventory = new ItemStack[41];
+  static {
+    Arrays.fill(previousInventory, ItemStack.EMPTY);
+  }
 
   /**
    * Checks the inventory to detect usage of items & blocks.
@@ -26,43 +33,52 @@ public class RefillClientEvents {
     if (Minecraft.getInstance().screen != null) {
       // this invalidates the current inventory cache
       // to prevent the hotbar from filling up the second the interface is closed
-      previousInv.selectedHotbarSlot = -1;
       return;
     }
 
     final Player player = event.player;
-    final ItemStack currentItemStack = event.player.getInventory().getSelected();
-    final int hotbarSlot = player.getInventory().selected;
 
-    boolean wasEmptied = previousInv.currentStackSize > 0 && currentItemStack.isEmpty();
+    if (RefillConfig.refillOffhand.get()) {
+      checkRefill(player, Inventory.SLOT_OFFHAND);
+    }
+
+    RefillScope refillScope = RefillConfig.refillScope.get();
+    if (refillScope == RefillScope.HAND) {
+      checkRefill(player, player.getInventory().selected);
+    } else {
+      int watchedInventorySize = RefillConfig.refillScope.get() == RefillScope.HOTBAR ? 9 : Inventory.INVENTORY_SIZE;
+      for (int i = 0; i < watchedInventorySize; i++) {
+        checkRefill(player, i);
+      }
+    }
+  }
+
+  private static void checkRefill(Player player, int slot) {
+    ItemStack currentStack = player.getInventory().getItem(slot);
+    ItemStack previousStack = previousInventory[slot];
+
+    boolean wasEmptied = !previousStack.isEmpty() && currentStack.isEmpty();
 
     // detect whether player changed which hotbar slot is selected
     // or replaced current ItemStack in the active hotbar slot
-    if (hotbarSlot != previousInv.selectedHotbarSlot || (
-      !wasEmptied && !ModInventoryHelper.areItemStacksEqual(currentItemStack, previousInv.currentItemStack))
-    ) {
-      previousInv.selectedHotbarSlot = hotbarSlot;
-      previousInv.currentItemStack = currentItemStack.copy();
-      previousInv.currentStackSize = currentItemStack.getCount();
+    if (!ModInventoryHelper.areItemStacksEqual(currentStack, previousStack)) {
+      previousInventory[slot] = currentStack.copy();
 
-      return;
+      if (!wasEmptied) {
+        return;
+      }
     }
 
-    int newStackSize = currentItemStack.getCount();
-    if (newStackSize < previousInv.currentStackSize) {
-      RefillClientEvents.requestRefill((byte) hotbarSlot, previousInv.currentItemStack, previousInv.currentStackSize - newStackSize);
+    int newStackSize = currentStack.getCount();
+    int previousStackSize = previousStack.getCount();
+    if (newStackSize < previousStackSize && RefillConfig.canBeRefilled(previousStack)) {
+      requestRefill((byte) slot, previousStack, previousStackSize - newStackSize);
     }
 
-    previousInv.currentStackSize = newStackSize;
+    previousStack.setCount(newStackSize);
   }
 
   private static void requestRefill(byte inventorySlot, ItemStack itemStackTemplate, int requestedAmount) {
     ModNetworking.INSTANCE.sendToServer(new RequestRefillNetworkMessage(inventorySlot, itemStackTemplate, requestedAmount));
-  }
-
-  private static class InventoryData {
-    private int selectedHotbarSlot = -1;
-    private ItemStack currentItemStack = ItemStack.EMPTY;
-    private int currentStackSize = 0;
   }
 }

@@ -4,6 +4,7 @@ import be.ephys.shulker_enchantments.ModEnchantments;
 import be.ephys.shulker_enchantments.Tags;
 import be.ephys.shulker_enchantments.core.Mod;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -15,19 +16,27 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import java.util.Optional;
 
 public class RefillHandler {
-  public static void attemptRefill(final Player player, final int hotbarSlot, final ItemStack itemTemplate, int requestedAmount) {
+  public static void attemptRefill(final Player player, final int inventorySlot, final ItemStack itemTemplate, int requestedAmount) {
     if (player.isSpectator()) {
       return;
     }
 
-    ItemStack hotbarStack = player.getInventory().getItem(hotbarSlot);
+    if (!RefillConfig.canBeRefilled(itemTemplate)) {
+      return;
+    }
+
+    if (inventorySlot == Inventory.SLOT_OFFHAND && !RefillConfig.refillOffhand.get()) {
+      return;
+    }
+
+    ItemStack currentStack = player.getInventory().getItem(inventorySlot);
 
     // clamp to max stack size to ensure bad packets don't cause it to go above the max stack size
-    requestedAmount = Math.min(requestedAmount, itemTemplate.getMaxStackSize() - hotbarStack.getCount());
+    requestedAmount = Math.min(requestedAmount, itemTemplate.getMaxStackSize() - currentStack.getCount());
 
     // this can happen if the user changed the stack before the
     // refill-request packet could arrive
-    if (!hotbarStack.isEmpty() && !ModInventoryHelper.areItemStacksEqual(itemTemplate, hotbarStack)) {
+    if (!currentStack.isEmpty() && !ModInventoryHelper.areItemStacksEqual(itemTemplate, currentStack)) {
       return;
     }
 
@@ -65,12 +74,12 @@ public class RefillHandler {
     }
 
     ItemStack newStack;
-    if (hotbarStack.isEmpty()) {
+    if (currentStack.isEmpty()) {
       newStack = itemTemplate.copy();
       newStack.setCount(foundAmount);
     } else {
-      newStack = hotbarStack.copy();
-      newStack.setCount(hotbarStack.getCount() + foundAmount);
+      newStack = currentStack.copy();
+      newStack.setCount(currentStack.getCount() + foundAmount);
     }
 
     // there is some weird client desync happening here:
@@ -90,7 +99,7 @@ public class RefillHandler {
     //
     // This first detectAndSendChanges before we do any change ensures that the client is synchronised.
     player.containerMenu.broadcastChanges();
-    player.getInventory().setItem(hotbarSlot, newStack);
+    player.getInventory().setItem(inventorySlot, newStack);
     player.containerMenu.broadcastChanges();
   }
 
