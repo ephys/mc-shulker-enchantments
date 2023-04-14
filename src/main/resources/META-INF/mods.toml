@@ -35,3 +35,9 @@ This mod adds two enchantments for Shulker Boxes:
     versionRange="[${curiosVersion},)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.shulker_enchantments]]
+    modId="cookiecore"
+    mandatory=true
+    versionRange="[1.18.2-4.0.0,)"
+    ordering="AFTER"
+    side="BOTH"
