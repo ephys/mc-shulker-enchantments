@@ -42,8 +42,6 @@ public class ModEnchantments {
     MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, SIPHON::onItemUseFinish);
     MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, ModEnchantments::onAttachItemStackCapabilities);
 
-    //
-
     event.getRegistry().registerAll(REFILL);
   }
 
