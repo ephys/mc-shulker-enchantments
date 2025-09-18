@@ -115,6 +115,9 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     maven {
         url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
     }
     maven {
         name = "GitHubPackages"
@@ -160,13 +163,16 @@ dependencies {
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:5.14.1+1.20.1:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:5.14.1+1.20.1")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+
+    // Only for testing - https://www.curseforge.com/minecraft/mc-mods/shulker-box-slot
+    implementation fg.deobf("curse.maven:shulker-box-slot-316881:5793738")
 
     // https://github.com/Ephys/CookieCore/packages/102415
     // You'll need to authenticate to Github Packages
     // See https://docs.github.com/en/packages/guides/configuring-gradle-for-use-with-github-packages#authenticating-to-github-packages
-    implementation fg.deobf('be.ephys.cookiecore:cookiecore:1.20.1-5.0.0')
+    implementation fg.deobf("be.ephys.cookiecore:cookiecore:${cookiecore_version}")
 }
 
 mixin {
@@ -185,6 +191,8 @@ tasks.named('processResources', ProcessResources).configure {
             loader_version_range: loader_version_range,
             mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
             mod_authors         : mod_authors, mod_description: mod_description,
+            curios_version      : curios_version,
+            cookiecore_version  : cookiecore_version
     ]
     inputs.properties replaceProperties
 

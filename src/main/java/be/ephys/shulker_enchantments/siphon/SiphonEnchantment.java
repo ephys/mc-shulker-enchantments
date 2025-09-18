@@ -16,11 +16,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -35,7 +35,6 @@ public class SiphonEnchantment extends Enchantment {
 
   public SiphonEnchantment() {
     super(Rarity.RARE, ModEnchantments.SHULKER_LIKE, new EquipmentSlot[0]);
-    setRegistryName(Mod.MOD_ID + ":siphon");
     this.descriptionId = "enchantment." + Mod.MOD_ID + ".siphon";
   }
 
@@ -74,7 +73,7 @@ public class SiphonEnchantment extends Enchantment {
       return;
     }
 
-    if (!(event.getEntityLiving() instanceof Player player)) {
+    if (!(event.getEntity() instanceof Player player)) {
       return;
     }
 
@@ -100,7 +99,7 @@ public class SiphonEnchantment extends Enchantment {
 
     ItemEntity itemEntity = event.getItem();
     ItemStack pickedItemStack = itemEntity.getItem();
-    Player player = event.getPlayer();
+    Player player = event.getEntity();
 
     int totalPickedUp = siphonItem(player, pickedItemStack);
 
@@ -110,11 +109,11 @@ public class SiphonEnchantment extends Enchantment {
       player.getInventory().setChanged();
 
       if (!itemEntity.isSilent()) {
-        itemEntity.level.playSound(null, player.getX(), player.getY(), player.getZ(),
+        itemEntity.level().playSound(null, player.getX(), player.getY(), player.getZ(),
           SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
-          ((itemEntity.level.random.nextFloat() - itemEntity.level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+          ((itemEntity.level().random.nextFloat() - itemEntity.level().random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
       }
-      ((ServerPlayer) player).connection.send(new ClientboundTakeItemEntityPacket(event.getItem().getId(), event.getPlayer().getId(), totalPickedUp));
+      ((ServerPlayer) player).connection.send(new ClientboundTakeItemEntityPacket(event.getItem().getId(), player.getId(), totalPickedUp));
 
       player.containerMenu.broadcastChanges();
     }
@@ -140,9 +139,9 @@ public class SiphonEnchantment extends Enchantment {
       if (Tags.isEnderChest(invStack)) {
         itemHandler = new InvWrapper(player.getEnderChestInventory());
       } else {
-        Optional<IItemHandler> optionalItemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
+        Optional<IItemHandler> optionalItemHandler = invStack.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve();
         if (optionalItemHandler.isEmpty()) {
-          Mod.LOG.error("Item " + invStack.getItem().getRegistryName() + " is enchanted with siphon but does not have an item handler");
+          Mod.LOG.error("Item " + invStack.getItem() + " is enchanted with siphon but does not have an item handler");
           continue;
         }
 
@@ -151,7 +150,7 @@ public class SiphonEnchantment extends Enchantment {
 
       if (hasItem(itemHandler, pickedItemStack)) {
         pickedItemStack = pickedItemStack.copy();
-        pickedItemStack = addStackToExistingStacksOnly(player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve().get(), pickedItemStack, false);
+        pickedItemStack = addStackToExistingStacksOnly(player.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get(), pickedItemStack, false);
         if (!pickedItemStack.isEmpty()) {
           pickedItemStack = ItemHandlerHelper.insertItemStacked(itemHandler, pickedItemStack, false);
         }

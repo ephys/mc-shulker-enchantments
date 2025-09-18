@@ -17,7 +17,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 public class RefillEnchantment extends Enchantment {
   public RefillEnchantment() {
     super(Rarity.RARE, ModEnchantments.SHULKER_LIKE, new EquipmentSlot[0]);
-    setRegistryName(Mod.MOD_ID + ":refill");
     this.descriptionId = "enchantment." + Mod.MOD_ID + ".refill";
   }
 

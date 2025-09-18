@@ -2,45 +2,29 @@ package be.ephys.shulker_enchantments.core;
 
 import be.ephys.cookiecore.config.ConfigSynchronizer;
 import be.ephys.shulker_enchantments.CopyEnchantmentsLootModifier;
-import be.ephys.shulker_enchantments.ModEnchantments;
-import be.ephys.shulker_enchantments.refill.RefillClientEvents;
-import be.ephys.shulker_enchantments.refill.RequestRefillNetworkMessage;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import com.mojang.serialization.Codec;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @net.minecraftforge.fml.common.Mod(Mod.MOD_ID)
 public class Mod {
   public static final String MOD_ID = "shulker_enchantments";
-
-  private static final DeferredRegister<GlobalLootModifierSerializer<?>> GLM = DeferredRegister.create(ForgeRegistries.Keys.LOOT_MODIFIER_SERIALIZERS, MOD_ID);
-  private static final RegistryObject<CopyEnchantmentsLootModifier.Serializer> COPY_ENCHANTMENTS = GLM.register("copy_enchantments", CopyEnchantmentsLootModifier.Serializer::new);
   public static final Logger LOG = LogManager.getLogger(MOD_ID);
+  private static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Mod.MOD_ID);
 
-  public Mod() {
+  public static final String PERSISTED_ITEM_NBT_TAG_ID = Mod.MOD_ID + ":PersistedItemNbt";
+
+  static {
+    GLM.register("copy_enchantments", CopyEnchantmentsLootModifier.CODEC);
+  }
+
+  public Mod(FMLJavaModLoadingContext context) {
     ConfigSynchronizer.synchronizeConfig();
 
-    GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
-
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
-
-    FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Enchantment.class, ModEnchantments::registerEnchantments);
-  }
-
-  private void commonSetup(final FMLCommonSetupEvent evt) {
-    RequestRefillNetworkMessage.registerPacket();
-  }
-
-  private void clientSetup(final FMLClientSetupEvent event) {
-    MinecraftForge.EVENT_BUS.addListener(RefillClientEvents::onPlayerTick);
+    GLM.register(context.getModEventBus());
   }
 }

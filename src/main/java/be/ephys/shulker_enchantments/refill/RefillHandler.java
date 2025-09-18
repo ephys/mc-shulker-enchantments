@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -54,9 +54,9 @@ public class RefillHandler {
       if (Tags.isEnderChest(invStack)) {
         itemHandler = new InvWrapper(player.getEnderChestInventory());
       } else {
-        Optional<IItemHandler> optionalItemHandler = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve();
+        Optional<IItemHandler> optionalItemHandler = invStack.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve();
         if (!optionalItemHandler.isPresent()) {
-          Mod.LOG.error("Item " + invStack.getItem().getRegistryName() + " is enchanted with refill but does not have an item handler");
+          Mod.LOG.error("Item " + invStack.getItem() + " is enchanted with refill but does not have an item handler");
           continue;
         }
 

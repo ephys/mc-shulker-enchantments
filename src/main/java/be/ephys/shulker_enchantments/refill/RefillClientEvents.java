@@ -1,5 +1,6 @@
 package be.ephys.shulker_enchantments.refill;
 
+import be.ephys.shulker_enchantments.core.Mod;
 import be.ephys.shulker_enchantments.core.ModNetworking;
 import be.ephys.shulker_enchantments.helpers.ModInventoryHelper;
 import be.ephys.shulker_enchantments.refill.RefillConfig.RefillScope;
@@ -10,11 +11,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 
 import java.util.Arrays;
 
 @OnlyIn(Dist.CLIENT)
+
+@net.minecraftforge.fml.common.Mod.EventBusSubscriber(
+  modid = Mod.MOD_ID,
+  value = Dist.CLIENT
+)
 public class RefillClientEvents {
   private static boolean trackingReset = false;
   private static final ItemStack[] previousInventory = new ItemStack[41];
@@ -27,6 +34,7 @@ public class RefillClientEvents {
    * Checks the inventory to detect usage of items & blocks.
    * Requests server to refill when a detection occurs.
    */
+  @SubscribeEvent
   public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
     if (event.side != LogicalSide.CLIENT) {
       return;
