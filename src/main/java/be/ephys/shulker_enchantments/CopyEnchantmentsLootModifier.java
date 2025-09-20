@@ -8,11 +8,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.EnderChestBlock;
-import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
-import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -36,24 +33,24 @@ public class CopyEnchantmentsLootModifier extends LootModifier {
 
   @Override
   protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> drops, LootContext context) {
-    if (!context.hasParam(LootContextParams.BLOCK_ENTITY)) {
+    if (!context.hasParam(LootContextParams.BLOCK_ENTITY) || !context.hasParam(LootContextParams.BLOCK_STATE)) {
       return drops;
     }
 
+    BlockState blockState = context.getParam(LootContextParams.BLOCK_STATE);
     BlockEntity tileEntity = context.getParam(LootContextParams.BLOCK_ENTITY);
-    if (!(tileEntity instanceof ShulkerBoxBlockEntity) && !(tileEntity instanceof EnderChestBlockEntity)) {
-      return drops;
-    }
 
     CompoundTag tileStackNbt = tileEntity.getPersistentData().getCompound(Mod.PERSISTED_ITEM_NBT_TAG_ID);
+    if (tileStackNbt.isEmpty()) {
+      return drops;
+    }
 
     for (ItemStack drop : drops) {
-      if (!(drop.getItem() instanceof BlockItem)) {
+      if (!(drop.getItem() instanceof BlockItem blockItem)) {
         continue;
       }
 
-      BlockItem blockItem = (BlockItem) drop.getItem();
-      if (!(blockItem.getBlock() instanceof ShulkerBoxBlock) && !(blockItem.getBlock() instanceof EnderChestBlock)) {
+      if (!blockItem.getBlock().equals(blockState.getBlock())) {
         continue;
       }
 
